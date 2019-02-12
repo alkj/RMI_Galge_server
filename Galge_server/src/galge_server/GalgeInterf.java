@@ -1,5 +1,5 @@
 
-package server;
+package galge_server;
 
 public interface GalgeInterf extends java.rmi.Remote{
     
