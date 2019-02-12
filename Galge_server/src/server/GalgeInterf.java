@@ -1,7 +1,7 @@
 
-package galge_server;
+package server;
 
-public interface GalgeInterface extends java.rmi.Remote{
+public interface GalgeInterf extends java.rmi.Remote{
     
     void startSpil()            throws Exception;
     String getOrd()             throws java.rmi.RemoteException;

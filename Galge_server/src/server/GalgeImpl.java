@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package galge_server;
+package server;
 
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
@@ -12,11 +12,11 @@ import java.rmi.server.UnicastRemoteObject;
  *
  * @author alexander
  */
-public class GalgeImplementation extends UnicastRemoteObject implements GalgeInterface {
+public class GalgeImpl extends UnicastRemoteObject implements GalgeInterf {
     
     private GalgeLogik gl = new GalgeLogik();
     
-    public GalgeImplementation() throws RemoteException{
+    public GalgeImpl() throws RemoteException{
         
     }
 
