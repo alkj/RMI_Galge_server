@@ -12,11 +12,11 @@ import java.rmi.server.UnicastRemoteObject;
  *
  * @author alexander
  */
-public class GalgeImpl extends UnicastRemoteObject implements GalgeInterf {
+public class GalgeImplementation extends UnicastRemoteObject implements GalgeInterface {
     
     private GalgeLogik gl = new GalgeLogik();
     
-    public GalgeImpl() throws RemoteException{
+    public GalgeImplementation() throws RemoteException{
         
     }
 
