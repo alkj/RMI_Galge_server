@@ -9,6 +9,8 @@ import brugerautorisation.transport.rmi.Brugeradmin;
 import java.rmi.Naming;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  *
@@ -16,8 +18,7 @@ import java.rmi.server.UnicastRemoteObject;
  */
 public class GalgeImpl extends UnicastRemoteObject implements GalgeInterf {
     
-    private GalgeLogik gl = new GalgeLogik();
-    private boolean erLoggetInd = false;
+    private HashMap<String, GalgeLogik> galgeSpil = new HashMap<String, GalgeLogik>();
     
     public GalgeImpl() throws RemoteException{
         
@@ -28,74 +29,97 @@ public class GalgeImpl extends UnicastRemoteObject implements GalgeInterf {
      * @throws Exception
      */
     @Override
-    public void startSpil() throws Exception {
-        gl.hentOrdFraDr();
-        gl.nulstil();
+    public void startSpil(String brugerNavn, String kodeOrd) throws Exception {
+        if (logInd(brugerNavn, kodeOrd)) {
+        galgeSpil.get(brugerNavn).nulstil();
         System.out.println("der er lige blevet startet et spil");
+        }
+        System.out.println("startSpil() blev kaldt med forkert bruger eller kode");
     }
     
     @Override
-    public String getOrd() throws java.rmi.RemoteException {
-        if (erLoggetInd) {            
-        return gl.getSynligtOrd();
+    public String getOrd(String brugerNavn, String kodeOrd) throws java.rmi.RemoteException {
+        if (logInd(brugerNavn, kodeOrd)) {
+            return galgeSpil.get(brugerNavn).getSynligtOrd();
         } else {
-            return "ikke logget ind";
+            return "getOrd(), men ikke logget ind";
         }
     }
     
     
     @Override
-    public String gæt(String s) throws RemoteException {
+    public String gæt(String brugerNavn, String kodeOrd, String s) throws RemoteException {
         
-        if (erLoggetInd) {            
-        gl.gætBogstav(s);
-        System.out.println("der er lige blevet gættet på bogstav :" + s);
-        return gl.getSynligtOrd();
+        if (logInd(brugerNavn, kodeOrd)) {
+            
+            if (galgeSpil.containsKey(brugerNavn)) {
+                galgeSpil.get(brugerNavn).gætBogstav(s);
+                return galgeSpil.get(brugerNavn).getSynligtOrd();
+            } else {
+                galgeSpil.put(brugerNavn, new GalgeLogik(brugerNavn, kodeOrd));
+                galgeSpil.get(brugerNavn).gætBogstav(s);
+                return galgeSpil.get(brugerNavn).getSynligtOrd();
+            }
+        } else {
+            return "forkert brugernavn eller kode";
         }
-        return "du er ikke logget ind";
-        
         
     }
     
     @Override
-    public boolean varRigtigt() {
-        if (erLoggetInd) {
-        return gl.erSidsteBogstavKorrekt();            
+    public boolean varRigtigt(String brugerNavn, String kodeOrd) throws RemoteException {
+        
+        if (logInd(brugerNavn, kodeOrd)) {
+        return galgeSpil.get(brugerNavn).erSidsteBogstavKorrekt();            
         }
         return false;
     }
     
     @Override
-    public int antalFejl() throws RemoteException {
-        System.out.println("spilleren har " + gl.getAntalForkerteBogstaver() + " forkerte gæt.");
-        return gl.getAntalForkerteBogstaver();
-    }
-    
-    @Override
-    public boolean erSpilletVundet() throws RemoteException {
-        if (gl.erSpilletVundet()) {
-            System.out.println("spillet er vundet");
+    public int antalFejl(String brugerNavn, String kodeOrd) throws RemoteException {
+        if (logInd(brugerNavn, kodeOrd)) {
+            System.out.println("spiller " + brugerNavn + " har antal fejl: " + galgeSpil.get(brugerNavn).getAntalForkerteBogstaver());
+            return galgeSpil.get(brugerNavn).getAntalForkerteBogstaver();
+        } else {
+            return -1;
         }
-        return gl.erSpilletVundet();
     }
     
     @Override
-    public boolean erSpilletSlut() throws RemoteException {
-        if (gl.erSpilletVundet()) {
-            if (gl.erSpilletVundet()) {
-                System.out.println("spillet er vundet");
-            }
-            if (gl.erSpilletTabt()) {
-                System.out.println("spillet er tabt");
-            }
+    public boolean erSpilletVundet(String brugerNavn, String kodeOrd) throws RemoteException {
+        if (logInd(brugerNavn, kodeOrd)) {
+            if (galgeSpil.get(brugerNavn).erSpilletVundet()) {
+                System.out.println("spillet er vundet for " + brugerNavn);
+                return true;
+            } else return false;
         }
-        return gl.erSpilletSlut();
+        return false;
     }
     
     @Override
-    public void startIgen() throws RemoteException {
-        gl.nulstil();
-        System.out.println("spillet er genstartet");
+    public boolean erSpilletSlut(String brugerNavn, String kodeOrd) throws RemoteException {
+        if (logInd(brugerNavn, kodeOrd)) {
+            return galgeSpil.get(brugerNavn).erSpilletSlut();
+        }
+        return false;
+    }
+    
+    @Override
+    public void startIgen(String brugerNavn, String kodeOrd) throws RemoteException {
+        if (logInd(brugerNavn, kodeOrd)) {
+            
+            if (galgeSpil.containsKey(brugerNavn)) {
+                galgeSpil.get(brugerNavn).nulstil();
+                System.out.println("spillet er startet");
+            } else {
+                galgeSpil.put(brugerNavn, new GalgeLogik(brugerNavn, kodeOrd));
+                galgeSpil.get(brugerNavn).nulstil();
+            }
+
+        } else {
+            System.out.println("forkert brugernavn eller kodeord");
+        }
+
     }
     
     @Override
@@ -109,15 +133,15 @@ public class GalgeImpl extends UnicastRemoteObject implements GalgeInterf {
             ba = (Brugeradmin) Naming.lookup("rmi://javabog.dk/brugeradmin");
             ba.hentBruger(br, ko);
             System.out.println("--------logget ind--------");
-            this.erLoggetInd = true;
-            return this.erLoggetInd;
+            return true;
         } catch (Exception e) {
             System.err.println("ikke logget ind");
             System.err.println("forkert brugernavn/kode");
-            this.erLoggetInd=false;
-            return this.erLoggetInd;
+            return false;
             
         }
+        
+        
         
     }
     

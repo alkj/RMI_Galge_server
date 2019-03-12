@@ -20,6 +20,8 @@ public class GalgeLogik {
   private boolean sidsteBogstavVarKorrekt;
   private boolean spilletErVundet;
   private boolean spilletErTabt;
+  public String brugerNavn;
+  public String kodeOrd;
 
 
   public ArrayList<String> getBrugteBogstaver() {
@@ -55,19 +57,21 @@ public class GalgeLogik {
   }
 
 
-  public GalgeLogik() {
-    muligeOrd.add("bil");
-    muligeOrd.add("computer");
-    muligeOrd.add("programmering");
-    muligeOrd.add("motorvej");
-    muligeOrd.add("busrute");
-    muligeOrd.add("gangsti");
-    muligeOrd.add("skovsnegl");
-    muligeOrd.add("solsort");
-    muligeOrd.add("seksten");
-    muligeOrd.add("sytten");
-    muligeOrd.add("atten");
-    nulstil();
+  public GalgeLogik(String brugerNavn, String kodeOrd) {
+      this.brugerNavn=brugerNavn;
+      this.kodeOrd=kodeOrd;
+      muligeOrd.add("bil");
+      muligeOrd.add("computer");
+      muligeOrd.add("programmering");
+      muligeOrd.add("motorvej");
+      muligeOrd.add("busrute");
+      muligeOrd.add("gangsti");
+      muligeOrd.add("skovsnegl");
+      muligeOrd.add("solsort");
+      muligeOrd.add("seksten");
+      muligeOrd.add("sytten");
+      muligeOrd.add("atten");
+      nulstil();
   }
 
   public void nulstil() {
