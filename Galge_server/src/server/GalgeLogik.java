@@ -4,10 +4,19 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Random;
+
+import java.util.ArrayList;
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import org.json.JSONObject;
+
+
+
 
 public class GalgeLogik {
     
@@ -150,6 +159,8 @@ public class GalgeLogik {
 
 
   public void hentOrdFraDr() throws Exception {
+      
+      /*
     String data = hentUrl("https://dr.dk");
     //System.out.println("data = " + data);
 
@@ -172,5 +183,36 @@ public class GalgeLogik {
 
     System.out.println("muligeOrd = " + muligeOrd);
     nulstil();
+    */
+      
+      
+      Client cl = ClientBuilder.newClient();
+      Response rs = cl.target("https://www.dr.dk/mu-online/api/1.4/schedule/nownext/dr1").request(MediaType.APPLICATION_JSON).get();
+      String stri = rs.readEntity(String.class);
+      JSONObject json = new JSONObject(stri);
+      
+      
+      ArrayList<String> galgeOrd = new ArrayList<String>();
+      
+      String str = json.getJSONObject("Now").getString("Description");
+      str = str.replace(",", "");
+      str = str.replace(".", "");
+      str = str.toLowerCase();
+      String[] temp = str.split(" ");
+      
+      for (int i = 0; i < temp.length; i++) {
+          temp[i] = temp[i].trim();
+          if (temp[i].length()>5) {
+              galgeOrd.add(temp[i]);
+              System.out.println( temp[i] );
+          }
+      }
+      
+      muligeOrd.clear();
+      muligeOrd.addAll(galgeOrd);
+      System.out.println(muligeOrd);
+      nulstil();
+    
+    
   }
 }

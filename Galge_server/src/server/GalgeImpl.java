@@ -53,6 +53,7 @@ public class GalgeImpl extends UnicastRemoteObject implements GalgeInterf {
         if (logInd(brugerNavn, kodeOrd)) {
             
             if (galgeSpil.containsKey(brugerNavn)) {
+                galgeSpil.get(brugerNavn).logStatus();
                 galgeSpil.get(brugerNavn).gætBogstav(s);
                 return galgeSpil.get(brugerNavn).getSynligtOrd();
             } else {
@@ -109,7 +110,11 @@ public class GalgeImpl extends UnicastRemoteObject implements GalgeInterf {
         if (logInd(brugerNavn, kodeOrd)) {
             
             if (galgeSpil.containsKey(brugerNavn)) {
-                galgeSpil.get(brugerNavn).nulstil();
+                try {
+                galgeSpil.get(brugerNavn).hentOrdFraDr();                    
+                } catch (Exception e) {
+                    System.out.println("kunne ikke hente ord");
+                }
                 System.out.println("spillet er startet");
             } else {
                 galgeSpil.put(brugerNavn, new GalgeLogik(brugerNavn, kodeOrd));
