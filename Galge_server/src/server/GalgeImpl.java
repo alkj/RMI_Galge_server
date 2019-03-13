@@ -33,8 +33,9 @@ public class GalgeImpl extends UnicastRemoteObject implements GalgeInterf {
         if (logInd(brugerNavn, kodeOrd)) {
         galgeSpil.get(brugerNavn).nulstil();
         System.out.println("der er lige blevet startet et spil");
+        } else{
+            System.out.println("startSpil() blev kaldt med forkert bruger eller kode");        
         }
-        System.out.println("startSpil() blev kaldt med forkert bruger eller kode");
     }
     
     @Override
@@ -107,15 +108,16 @@ public class GalgeImpl extends UnicastRemoteObject implements GalgeInterf {
     
     @Override
     public void startIgen(String brugerNavn, String kodeOrd) throws RemoteException {
-        if (logInd(brugerNavn, kodeOrd)) {
-            
+
+        if (logInd(brugerNavn, kodeOrd)) {            
             if (galgeSpil.containsKey(brugerNavn)) {
                 try {
                 galgeSpil.get(brugerNavn).hentOrdFraDr();                    
+                System.out.println("ord hentet fra DR");
                 } catch (Exception e) {
-                    System.out.println("kunne ikke hente ord");
+                    System.out.println("kunne ikke hente ord fra DR " + e);
                 }
-                System.out.println("spillet er startet");
+
             } else {
                 galgeSpil.put(brugerNavn, new GalgeLogik(brugerNavn, kodeOrd));
                 galgeSpil.get(brugerNavn).nulstil();
